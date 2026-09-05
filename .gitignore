@@ -1,0 +1,15 @@
+# account state — usage ledger and generated samples. Never ship.
+state/
+
+# credentials never live in the repo; this is belt and braces
+.model-studio.env
+*.env
+!*.env.example
+
+__pycache__/
+*.pyc
+.DS_Store
+
+# factory metadata — internal, not part of the public release
+.claude/
+CLAUDE.md

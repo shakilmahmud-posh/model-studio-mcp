@@ -1,0 +1,3 @@
+{"ts":"2026-08-21T10:00:00Z","kind":"chat","model":"capped-model","total_tokens":1000000}
+{"ts":"2026-08-21T10:00:01Z","kind":"image","model":"capped-image","output_image_count":100}
+{"ts":"2026-08-21T10:00:02Z","kind":"tts","model":"capped-tts","characters":2000}

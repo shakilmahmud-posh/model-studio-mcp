@@ -1,0 +1,61 @@
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # "Stdlib only" is the reason this project exists, so it is enforced rather
+  # than asserted in a README. Static property — one interpreter is enough, and
+  # it must be 3.10+ because sys.stdlib_module_names does not exist before that.
+  stdlib-only:
+    name: stdlib only
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: No third-party imports anywhere
+        run: |
+          python3 - <<'PY'
+          import ast, pathlib, sys
+          stdlib = set(sys.stdlib_module_names)
+          local  = {"modelstudio"}
+          bad = []
+          for f in list(pathlib.Path(".").rglob("*.py")) + [pathlib.Path("ms")]:
+              if "tests/" in str(f) or not f.is_file():
+                  continue
+              for node in ast.walk(ast.parse(f.read_text(encoding="utf-8"))):
+                  mods = []
+                  if isinstance(node, ast.Import):
+                      mods = [a.name.split(".")[0] for a in node.names]
+                  elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                      mods = [node.module.split(".")[0]]
+                  for m in mods:
+                      if m not in stdlib and m not in local:
+                          bad.append(f"{f}: {m}")
+          if bad:
+              print("third-party imports found:"); [print(" ", b) for b in bad]; raise SystemExit(1)
+          print("OK — stdlib only")
+          PY
+
+  # The suite makes no network calls and needs no credentials in static mode,
+  # so it runs unchanged on a fork's pull request. --deep spends real money and
+  # is deliberately never wired to CI.
+  suite:
+    name: verify / python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python3 --version
+      - run: bash verify.sh
