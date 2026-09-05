@@ -11,7 +11,7 @@ No SDK, no venv, no `pip install`. Clone it and run it.
 ./ms models --grep qwen3
 ```
 
-Fourteen MCP tools over the whole surface — chat and vision, embeddings, rerank, image, video,
+Fifteen MCP tools over the whole surface — chat and vision, embeddings, rerank, image, video,
 transcription, speech, batch, fine-tuning, files, async task polling, usage and budget.
 
 ---
@@ -92,7 +92,8 @@ minutes. Poll with `ms_task`.
 | `ms_files`               | upload, list, delete for fine-tuning and batch                                 |
 | `ms_batch`               | batch inference, billed at 50% of real-time                                    |
 | `ms_tune`                | fine-tuning lifecycle: create, status, logs, checkpoints                       |
-| `ms_budget` · `ms_usage` | guard headroom, and the local ledger of what you spent                         |
+| `ms_budget`              | free-quota headroom per model, and whether the guard is enforcing              |
+| `ms_usage`               | the local ledger of what you actually spent, per kind and per model           |
 
 ## Prior art
 
